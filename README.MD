@@ -1,0 +1,283 @@
+# MERGE Dataset: ETL, Exploration & Redesign
+**Big Data Processing in Python - Project 1**
+
+> **Student ID:** 23155  
+> **Course:** Big Data Processing in Python  
+> **Professor:** Renato Panda  
+> **Date:** June 2025
+
+## 📋 Project Overview
+
+This project focuses on the **MERGE Dataset**, a public multimodal dataset for Music Emotion Recognition (MER) containing audio, lyrics, and emotion labels. The original dataset presents challenges for usability, reproducibility, and integration with modern data science tools.
+
+**Goal:** Critically analyze, refactor, and enhance the dataset's structure and usability—mirroring a real-world data engineering task.
+
+## 🎯 Objectives
+
+- ✅ Explore and understand the current MERGE dataset structure and content
+- ✅ Identify and document issues in organization, naming, splits, and usability  
+- ✅ Implement improvements for unified schema and naming conventions
+- ✅ Develop centralized metadata and split management
+- ✅ Create ETL scripts for downloading, validating, and loading the dataset
+- 🔄 Develop loader scripts for easy access (Python) - **[TO BE COMPLETED]**
+- 🔄 Demonstrate data exploration and visualization - **[TO BE COMPLETED]**
+- 📝 Document process and rationale for each design decision
+
+## 📊 Dataset at a Glance
+
+The MERGE dataset consists of several modality-specific and bimodal subsets:
+
+| Subset | Complete | Balanced |
+|--------|----------|----------|
+| Audio | 3554 | 3232 |
+| Lyrics | 2568 | 2400 |
+| Bimodal (Audio+Lyrics) | 2216 | 2000 |
+
+- **Files:** Each subset distributed as ZIP file from [Zenodo](https://zenodo.org/records/13939205)
+- **Splits:** Both 70-15-15 and 40-30-30 train/val/test splits provided
+- **Metadata:** Includes Song, Quadrant, Artist, Title, Genres, Moods, Themes, ActualYear, and more
+
+## 🏗️ Project Structure
+
+```
+ProjetoBigData23155/
+├── data/                           # Raw audio and lyrics files
+│   ├── audio/                      # Audio files (.mp3)
+│   └── lyrics/                     # Lyrics files
+├── metadata/                       # All metadata and split information
+│   ├── base/                       # Consolidated base metadata files
+│   ├── last/                       # Original dataset files from MERGE
+│   └── splits/                     # Processed split files
+│       ├── audio/                  # Audio-specific splits
+│       ├── bimodal/               # Bimodal splits
+│       └── lyrics/                # Lyrics-specific splits
+├── scripts/                        # ETL, processing, and utility scripts
+│   ├── [merge_*_arousal_valence.py] # Arousal/Valence merging scripts
+│   ├── [transform_to_tvt_*.py]     # Split transformation scripts  
+│   ├── [consolidate_*.py]          # Data consolidation scripts
+│   ├── [validate_*.py]             # Data validation scripts
+│   ├── [verify_*.py]               # Split verification scripts
+│   └── loader.py                   # Main dataset loader **[TO BE COMPLETED]**
+├── notebooks/                      # Jupyter notebooks for analysis
+│   └── relatorio.ipynb            # Main project report **[TO BE COMPLETED]**
+├── README.md                       # This file
+└── p1.txt                         # Project assignment specifications
+```
+
+## 🔧 Implemented Solutions
+
+### 1. Schema Redesign & Standardization ✅
+
+**Issues Identified:**
+- Inconsistent naming (Song, SongID, Song_id)
+- Fragmented subsets across multiple files
+- Poor documentation and usability
+
+**Solutions Implemented:**
+- Unified column naming (`Song_id` standardization)
+- Centralized metadata consolidation
+- Consistent split file structures
+
+### 2. ETL Scripts ✅
+
+#### Arousal/Valence Integration
+- `merge_arousal_valence.py` - Audio metadata enhancement
+- `merge_bimodal_arousal_valence.py` - Bimodal metadata enhancement  
+- `merge_lyrics_arousal_valence.py` - Lyrics metadata enhancement
+
+#### Split Management
+- `transform_to_tvt_70_15_15_audio.py` - 70-15-15 splits for audio
+- `transform_to_tvt_70_15_15_bimodal.py` - 70-15-15 splits for bimodal
+- `transform_to_tvt_70_15_15_lyrics.py` - 70-15-15 splits for lyrics
+- `transform_to_tvt_40_30_30_*.py` - 40-30-30 split variants
+
+#### Data Consolidation
+- `consolidate_audio_splits.py` - Unified audio split management
+- `consolidate_tvt_audio_splits.py` - TVT-specific consolidation
+
+#### Validation & Verification
+- `validate_*_balanced.py` - Balanced dataset validation
+- `verify_audio_splits.py` - Split integrity verification
+
+### 3. Consolidated Metadata Structure ✅
+
+Each modality now has unified split files with structure:
+```csv
+Song_id,Quadrant,in_balanced_train,in_balanced_validate,in_balanced_test,in_complete_train,in_complete_validate,in_complete_test
+```
+
+This design allows:
+- ✅ Easy filtering by split type (balanced vs complete)
+- ✅ Easy filtering by split phase (train/validate/test)
+- ✅ Clear tracking of song membership across different splits
+- ✅ Unified schema across all modalities
+
+## 🚀 Quick Start
+
+### Prerequisites
+```bash
+pip install pandas numpy
+# Add other requirements as needed
+```
+
+### Basic Usage
+
+**[TO BE COMPLETED - Requires implementation of loader.py]**
+
+```python
+from scripts.loader import load_merge_dataset
+
+# Load balanced audio training set with 70-15-15 split
+df = load_merge_dataset(
+    version='v1.1',          # Dataset version
+    split='train',           # train/validate/test
+    strategy='70_15_15',     # Split strategy  
+    balanced=True,           # Balanced vs complete
+    mode='audio',            # audio/lyrics/bimodal
+    return_format='pandas'   # Return format
+)
+
+print(df.head())
+```
+
+### Manual Script Execution
+
+```bash
+# Merge arousal/valence values
+python scripts/merge_arousal_valence.py
+
+# Transform to consolidated splits
+python scripts/transform_to_tvt_70_15_15_audio.py
+
+# Verify split integrity
+python scripts/verify_audio_splits.py
+```
+
+## 🔍 Data Exploration & Analysis
+
+**[TO BE COMPLETED - Planned implementations]**
+
+- 📊 Label distribution analysis
+- 📈 Modality coverage statistics  
+- 🎵 Audio feature exploration
+- 📝 Lyrics sentiment analysis
+- 🔄 Cross-modal correlation analysis
+
+## 📈 Validation Results
+
+The implemented scripts provide comprehensive validation:
+
+- ✅ **Metadata Integrity:** All Song_id references validated
+- ✅ **Split Consistency:** No overlapping songs between train/validate/test
+- ✅ **Arousal/Valence Coverage:** Tracking of missing values per modality
+- ✅ **File Existence:** Verification of audio/lyrics file availability
+
+## 🐛 Known Issues & Limitations
+
+### Identified Issues
+1. **Poor Documentation:** Original dataset lacks clear usage instructions
+2. **Inconsistent Naming:** Multiple variations of Song identifiers  
+3. **Fragmented Subsets:** Data scattered across multiple files
+4. **Manual Preprocessing:** Significant cleaning required before analysis
+5. **Too Many Variants:** Multiple split strategies distributed separately
+6. **Versioning Issues:** No clear mechanism to track changes
+
+### Current Limitations
+- ⚠️ **Loader API:** Main loader script needs implementation
+- ⚠️ **Visualization:** Data exploration notebooks incomplete
+- ⚠️ **Documentation:** Data dictionary needs completion
+- ⚠️ **Testing:** Automated testing suite missing
+
+## 🔮 Future Improvements
+
+### Planned Enhancements
+- [ ] **Complete Loader API:** Implement `loader.py` with version-aware loading
+- [ ] **Data Visualization:** Interactive dashboard with Plotly
+- [ ] **Schema Documentation:** Complete data dictionary with field descriptions
+- [ ] **Version Management:** Implement version-specific patch files
+- [ ] **PyTorch Integration:** Add PyTorch Dataset loaders
+- [ ] **Automated Testing:** Unit tests for all ETL scripts
+- [ ] **Documentation:** Complete user guide and API documentation
+
+### Integration Possibilities
+- [ ] **Hugging Face Datasets:** Package for easy distribution
+- [ ] **mirdata:** Integration with music information retrieval framework
+- [ ] **Python Package:** Distribute as installable library
+
+## 📝 Technical Implementation Notes
+
+### Script Dependencies
+```python
+import pandas as pd
+import numpy as np
+import os
+import sys
+from pathlib import Path
+```
+
+### File Path Conventions
+- All scripts use relative paths from project root
+- `Path(__file__).parent.parent` pattern for cross-platform compatibility
+- Consistent directory structure maintained across scripts
+
+### Error Handling
+- Comprehensive file existence checking
+- Clear error messages with suggested solutions
+- Graceful handling of missing data
+
+## 📊 Project Statistics
+
+### Files Processed
+- **Audio Files:** 200+ MP3 files
+- **Metadata Files:** 15+ CSV files across modalities
+- **Split Files:** 18+ consolidated split configurations
+- **Scripts:** 15+ ETL and validation scripts
+
+### Data Quality Metrics
+- **Song ID Consistency:** 100% standardized to `Song_id`
+- **Split Coverage:** All songs tracked across split strategies
+- **Arousal/Valence Integration:** **[PERCENTAGE TO BE CALCULATED]**%
+- **File Integrity:** **[TO BE VALIDATED]**% of referenced files exist
+
+## 🎓 Academic Context
+
+This project demonstrates key concepts in:
+- **Data Engineering:** ETL pipeline design and implementation
+- **Data Quality:** Validation, verification, and integrity checking
+- **Schema Design:** Unified data structure development
+- **Reproducibility:** Version-aware data management
+- **Documentation:** Comprehensive project documentation
+
+## 📚 Citation
+
+**Original Dataset:**
+```bibtex
+@article{louro2024merge,
+  title={MERGE - A Bimodal Dataset For Static Music Emotion Recognition},
+  author={Louro, P. L. et al.},
+  journal={arXiv preprint arXiv:2407.06060},
+  year={2024}
+}
+```
+
+**This Project:**
+```bibtex
+@misc{merge_redesign_23155,
+  title={MERGE Dataset: ETL, Exploration & Redesign},
+  author={Student 23155},
+  year={2025},
+  note={Big Data Processing in Python - Project 1}
+}
+```
+
+## 📞 Contact & Support
+
+- **Student ID:** 23155
+- **Course:** Big Data Processing in Python
+- **Institution:** **[TO BE FILLED]**
+- **Email:** **[TO BE FILLED]**
+
+---
+
+**Last Updated:** June 2025  
+**Status:** Work in Progress - Core ETL completed, Loader and Analysis pending
