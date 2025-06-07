@@ -6,29 +6,6 @@
 > **Professor:** Renato Panda  
 > **Date:** June 2025
 
-## 📑 Table of Contents
-
-1. [📋 Project Overview](#-project-overview)
-2. [🎯 Objectives](#-objectives)
-3. [📊 Dataset at a Glance](#-dataset-at-a-glance)
-4. [🏗️ Project Structure](#️-project-structure)
-5. [🔧 Implemented Solutions](#-implemented-solutions)
-   - [Schema Redesign & Standardization](#1-schema-redesign--standardization-)
-   - [Dataset Unification](#2-dataset-unification-)
-   - [ETL Scripts](#3-etl-scripts-)
-   - [Consolidated Metadata Structure](#4-consolidated-metadata-structure-)
-   - [Unified Dataset Implementation](#5-unified-dataset-implementation-)
-   - [DatasetLoader Implementation](#6-datasetloader-implementation-)
-   - [Comprehensive Validation System](#7-comprehensive-validation-system-)
-6. [📚 DatasetLoader Complete Reference](#-datasetloader-complete-reference)
-7. [🚀 Quick Start](#-quick-start)
-8. [🔍 Data Exploration & Analysis](#-data-exploration--analysis)
-9. [📈 Validation Results](#-validation-results)
-10. [🐛 Known Issues & Limitations](#-known-issues--limitations)
-11. [🔮 Future Improvements](#-future-improvements)
-12. [📝 Technical Implementation Notes](#-technical-implementation-notes)
-13. [📊 Project Statistics](#-project-statistics)
-14. [🎓 Academic Context](#-academic-context)
 
 ## 📋 Project Overview
 
@@ -43,8 +20,8 @@ This project focuses on the **MERGE Dataset**, a public multimodal dataset for M
 - ✅ Implement improvements for unified schema and naming conventions
 - ✅ Develop centralized metadata and split management
 - ✅ Create ETL scripts for downloading, validating, and loading the dataset
-- ✅ Develop loader scripts for easy access (Python) - **[COMPLETED]**
-- 🔄 Demonstrate data exploration and visualization - **[TO BE COMPLETED]**
+- ✅ Develop loader scripts for easy access (Python)
+- ✅ Demonstrate data exploration and visualization 
 - 📝 Document process and rationale for each design decision
 
 ## 📊 Dataset at a Glance
@@ -73,23 +50,20 @@ ProjetoBigData23155/
 │   ├── last/                       # Original dataset files from MERGE
 │   └── splits/                     # Processed split files
 │       ├── audio/                  # Audio-specific splits
-│       ├── bimodal/               # Bimodal splits
-│       └── lyrics/                # Lyrics-specific splits
+│       ├── bimodal/                # Bimodal splits
+│       └── lyrics/                 # Lyrics-specific splits
 ├── scripts/                        # ETL, processing, and utility scripts
-│   ├── [merge_*_arousal_valence.py] # Arousal/Valence merging scripts
+│   ├── [merge_*_arousal_valence.py]# Arousal/Valence merging scripts
 │   ├── [transform_to_tvt_*.py]     # Split transformation scripts  
 │   ├── [consolidate_*.py]          # Data consolidation scripts
 │   ├── [validate_*.py]             # Data validation scripts
 │   ├── [verify_*.py]               # Split verification scripts
-│   ├── loader.py                   # Main dataset loader **[COMPLETED]**
-│   └── test_loader.py             # Loader test suite **[COMPLETED]**
+│   ├── loader.py                   # Main dataset loader 
+│   └── test_loader.py              # Loader test suite 
 ├── notebooks/                      # Jupyter notebooks for analysis
-│   ├── analise.ipynb              # Dataset exploration and analysis
-│   └── relatorio.ipynb            # Main project report **[TO BE COMPLETED]**
-├── exemplos_loader.py             # Comprehensive loader usage examples **[COMPLETED]**
-├── LOADER_GUIDE.md               # Detailed loader documentation **[COMPLETED]**
-├── README.md                      # This file
-└── p1.txt                         # Project assignment specifications
+│   ├── dashboard.py                # Dataset exploration and analysis using Streamlit
+├── LOADER_GUIDE.md                 # Detailed loader documentation                   # 
+└── README.md                       # This file
 ```
 
 ## 🔧 Implemented Solutions
@@ -207,8 +181,6 @@ A comprehensive, production-ready loader for easy access to all dataset variants
 - **Default Loading:** Automatically loads `merge_unified.csv` when no parameters specified
 - **Flexible Filtering:** Support for modality, balanced/complete, split types
 - **Multiple Formats:** Base datasets and TVT splits with various proportions
-- **Error Handling:** Robust validation with informative error messages
-- **Type Safety:** Full type hints for better IDE support
 - **Performance:** Efficient merging and filtering operations
 
 **DatasetLoader Class:**
@@ -308,133 +280,6 @@ print(f"Train samples: {split_info['in_balanced_train']}")
 - **Q3 (Low Arousal, Low Valence):** 929 songs (23.8%)
 - **Q4 (Low Arousal, High Valence):** 1,075 songs (27.5%)
 
-### Usage Examples by Use Case
-
-#### 1. Machine Learning Pipeline
-```python
-from scripts.loader import DatasetLoader
-import pandas as pd
-
-# Initialize loader
-loader = DatasetLoader()
-
-# Load training data for audio emotion recognition
-train_splits = loader.load_split_dataset(
-    modality="audio",
-    split_ratio="70_15_15", 
-    split_type=["train", "validate", "test"],
-    balanced_type="balanced"
-)
-
-# Extract features and labels
-X_train = train_splits["audio"]["train"][["Arousal", "Valence"]]
-y_train = train_splits["audio"]["train"]["Quadrant"]
-X_val = train_splits["audio"]["validate"][["Arousal", "Valence"]]
-y_val = train_splits["audio"]["validate"]["Quadrant"]
-
-print(f"Training set: {X_train.shape}")
-print(f"Validation set: {X_val.shape}")
-print(f"Class distribution: {y_train.value_counts().to_dict()}")
-```
-
-#### 2. Multimodal Analysis
-```python
-# Compare all modalities with same split
-multimodal_train = loader.load_split_dataset(
-    modality="all",
-    split_type="train", 
-    balanced_type="balanced"
-)
-
-for modality, data in multimodal_train.items():
-    train_df = data["train"]
-    print(f"{modality.upper()}:")
-    print(f"  Samples: {len(train_df)}")
-    print(f"  Avg Arousal: {train_df['Arousal'].mean():.3f}")
-    print(f"  Avg Valence: {train_df['Valence'].mean():.3f}")
-```
-
-#### 3. Cross-Validation Setup
-```python
-# Load both split ratios for cross-validation
-splits_40_30_30 = load_splits(split_ratio="40_30_30", modality="bimodal")
-splits_70_15_15 = load_splits(split_ratio="70_15_15", modality="bimodal")
-
-print("40-30-30 split sizes:")
-for split_name, split_data in splits_40_30_30["bimodal"].items():
-    print(f"  {split_name}: {split_data.shape[0]}")
-
-print("70-15-15 split sizes:")  
-for split_name, split_data in splits_70_15_15["bimodal"].items():
-    print(f"  {split_name}: {split_data.shape[0]}")
-```
-
-#### 4. Data Exploration
-```python
-# Load complete dataset for exploration
-complete_data = loader.load_default()
-
-# Basic statistics
-print(f"Total songs: {len(complete_data)}")
-print(f"Year range: {complete_data['ActualYear'].min()}-{complete_data['ActualYear'].max()}")
-print(f"Unique artists: {complete_data['Artist'].nunique()}")
-
-# Emotion distribution
-emotion_stats = complete_data.groupby('Quadrant')[['Arousal', 'Valence']].agg(['mean', 'std'])
-print("\nEmotion statistics by quadrant:")
-print(emotion_stats)
-
-# Missing data analysis
-missing_data = complete_data.isnull().sum()
-print(f"\nColumns with missing data: {missing_data[missing_data > 0].to_dict()}")
-```
-
-#### 5. Balanced vs Complete Comparison
-```python
-# Compare balanced and complete datasets
-balanced_audio = loader.load_base_dataset("audio", balanced_only=True)
-complete_audio = loader.load_base_dataset("audio", balanced_only=False)
-
-print(f"Audio Balanced: {balanced_audio.shape[0]} songs")
-print(f"Audio Complete: {complete_audio.shape[0]} songs")
-print(f"Difference: {complete_audio.shape[0] - balanced_audio.shape[0]} songs")
-
-# Analyze what's filtered out
-filtered_out = complete_audio[~complete_audio['Song_id'].isin(balanced_audio['Song_id'])]
-print(f"Filtered songs by quadrant: {filtered_out['Quadrant'].value_counts().to_dict()}")
-```
-
-### Advanced Features
-
-#### Error Handling & Validation
-```python
-try:
-    # The loader validates all parameters
-    data = loader.load_split_dataset(
-        modality="invalid_modality",  # Will raise ValueError
-        split_ratio="40_30_30"
-    )
-except ValueError as e:
-    print(f"Parameter error: {e}")
-
-# Check if files exist before loading
-info = loader.get_dataset_info("audio")
-if info['shape'][0] > 0:
-    print("Audio dataset is available")
-```
-
-#### Memory-Efficient Loading
-```python
-# For large datasets, load only what you need
-test_only = loader.load_split_dataset(
-    modality="lyrics",
-    split_type="test",          # Only test set
-    balanced_type="balanced"    # Only balanced data
-)
-
-print(f"Memory usage reduced by loading only: {test_only['lyrics']['test'].shape}")
-```
-
 ### Files Generated by Loader
 - **Test Suite:** `scripts/test_loader.py` - Comprehensive test validation
 - **Examples:** `exemplos_loader.py` - Practical usage examples
@@ -495,24 +340,25 @@ data = loader.load_default()
 print(f"Total songs: {len(data)}")
 print(f"Quadrants: {data['Quadrant'].value_counts().to_dict()}")
 
-# Quick dataset loading
+# Carregar datasets base com diferentes opções
 audio_balanced = load_dataset("audio", balanced_only=True)      # 3,232 records
 bimodal_complete = load_dataset("bimodal", balanced_only=False) # 2,216 records
 lyrics_balanced = load_dataset("lyrics", balanced_only=True)    # 2,400 records
+unified_data = load_dataset("unified", balanced_only=False)     # Dataset unificado completo
 ```
 
-**2. Split Loading for Machine Learning:**
+**2. Split Loading para Machine Learning:**
 
 ```python
-# Load training splits for model development
+# Carregamento de splits específicos
 train_splits = loader.load_split_dataset(
-    modality="audio",           # Focus on audio data
-    split_ratio="70_15_15",     # 70% train, 15% val, 15% test
-    split_type="all",           # Load all split types
-    balanced_type="balanced"    # Use balanced dataset
+    modality="audio",           # "audio", "bimodal", "lyrics", "all", ou lista ["audio", "bimodal"]
+    split_ratio="70_15_15",     # "70_15_15" ou "40_30_30"
+    split_type="all",           # "train", "validate", "test", "all", ou lista ["train", "test"] 
+    balanced_type="balanced"    # "balanced" ou "complete"
 )
 
-# Extract data for ML pipeline
+# Preparação de dados para ML
 X_train = train_splits["audio"]["train"][["Arousal", "Valence"]]
 y_train = train_splits["audio"]["train"]["Quadrant"]
 X_val = train_splits["audio"]["validate"][["Arousal", "Valence"]]
@@ -520,14 +366,22 @@ y_val = train_splits["audio"]["validate"]["Quadrant"]
 
 print(f"Training samples: {len(X_train)}")
 print(f"Validation samples: {len(X_val)}")
+
+# Carregamento apenas de dados de treino para proporção 40-30-30
+audio_train_40_30_30 = loader.load_split_dataset(
+    modality="audio",
+    split_ratio="40_30_30",
+    split_type="train", 
+    balanced_type="balanced"
+)
 ```
 
-**3. Multimodal Analysis:**
+**3. Análise Multimodal:**
 
 ```python
-# Compare all modalities
+# Comparação de todas as modalidades
 multimodal_data = loader.load_split_dataset(
-    modality="all",             # audio, bimodal, lyrics
+    modality="all",             # Carrega dados de audio, bimodal, lyrics
     split_type="train",
     balanced_type="balanced"
 )
@@ -537,22 +391,36 @@ for modality, data in multimodal_data.items():
     print(f"{modality}: {train_df.shape[0]} samples")
     print(f"  Avg Arousal: {train_df['Arousal'].mean():.3f}")
     print(f"  Avg Valence: {train_df['Valence'].mean():.3f}")
+
+# Carregar apenas dados de áudio e bimodal
+audio_bimodal_splits = loader.load_split_dataset(
+    modality=["audio", "bimodal"],  # Lista de modalidades específicas
+    split_ratio="40_30_30",
+    split_type=["validate", "test"], # Apenas splits de validação e teste
+    balanced_type="balanced"
+)
 ```
 
-**4. Quick Analysis:**
+**4. Análise Rápida e Recuperação de Informações:**
 
 ```python
-# Get dataset information
+# Obter informações sobre datasets
 info = loader.get_dataset_info("unified")
 print(f"Dataset shape: {info['shape']}")
 print(f"Missing values: {info['missing_values']}")
 print(f"Balanced columns: {list(info['balanced_columns'].keys())}")
+print(f"Quadrantes: {info['quadrants']}")
 
-# Get split information
+# Obter informações sobre splits
 split_info = loader.get_split_info("audio", "40_30_30")
 print(f"Split samples - Train: {split_info['in_balanced_train']}")
 print(f"Split samples - Val: {split_info['in_balanced_validate']}")
 print(f"Split samples - Test: {split_info['in_balanced_test']}")
+
+# Verificação de distribuição de quadrantes
+audio_data = load_dataset("audio")
+quadrant_counts = audio_data["Quadrant"].value_counts()
+print(f"Distribuição de quadrantes:\n{quadrant_counts}")
 ```
 
 ### Manual Dataset Access (Alternative)
@@ -601,15 +469,7 @@ python scripts/verify_audio_splits.py
 python scripts/validar_resultados.py
 ```
 
-## 🔍 Data Exploration & Analysis
 
-**[TO BE COMPLETED - Planned implementations]**
-
-- 📊 Label distribution analysis
-- 📈 Modality coverage statistics  
-- 🎵 Audio feature exploration
-- 📝 Lyrics sentiment analysis
-- 🔄 Cross-modal correlation analysis
 
 ## 📈 Validation Results
 
@@ -624,49 +484,6 @@ The implemented scripts provide comprehensive validation:
 - ✅ **Cross-Modal Consistency:** Bimodal entries properly linked across modalities
 
 
-## 📝 Technical Implementation Notes
-
-### Script Dependencies
-```python
-import pandas as pd
-import numpy as np
-import os
-import sys
-from pathlib import Path
-```
-
-### File Path Conventions
-- All scripts use relative paths from project root
-- `Path(__file__).parent.parent` pattern for cross-platform compatibility
-- Consistent directory structure maintained across scripts
-
-### Error Handling
-- Comprehensive file existence checking
-- Clear error messages with suggested solutions
-- Graceful handling of missing data
-
-## 📊 Project Statistics
-
-### Files Processed
-- **Audio Files:** 200+ MP3 files
-- **Metadata Files:** 15+ CSV files across modalities
-- **Split Files:** 18+ consolidated split configurations
-- **Scripts:** 20+ ETL, validation, and utility scripts
-- **Documentation:** 4 comprehensive guides and references
-
-### Data Quality Metrics
-- **Song ID Consistency:** 100% standardized to `Song_id`
-- **Split Coverage:** All songs tracked across split strategies
-- **Loader Coverage:** 100% dataset access with comprehensive filtering
-- **Validation Coverage:** End-to-end validation with 100% pass rate
-- **File Integrity:** All referenced audio/lyrics files validated
-
-### Loader Performance Metrics
-- **Default Load Time:** <1 second for unified dataset (3,906 records)
-- **Split Load Time:** <2 seconds for complex multimodal queries
-- **Memory Efficiency:** Selective loading reduces memory by up to 70%
-- **Error Handling:** 100% parameter validation with informative messages
-
 ## 🎓 Academic Context
 
 This project demonstrates key concepts in:
@@ -674,52 +491,3 @@ This project demonstrates key concepts in:
 - **Data Quality:** Validation, verification, and integrity checking
 - **Schema Design:** Unified data structure development
 - **Documentation:** Comprehensive project documentation
-
-## 🔗 Quick Reference Commands
-
-### DatasetLoader Quick Commands
-```python
-# Import the loader
-from scripts.loader import DatasetLoader, load_dataset, load_splits
-
-# Quick access patterns
-data = load_dataset()                                    # Default unified dataset
-audio = load_dataset("audio", balanced_only=True)       # Balanced audio only
-splits = load_splits(modality="all", split_type="train") # Train data for all modalities
-
-# Advanced usage
-loader = DatasetLoader()
-info = loader.get_dataset_info("unified")               # Dataset statistics
-splits = loader.load_split_dataset(modality="bimodal", split_ratio="70_15_15")
-```
-
-### Manual Script Execution
-```bash
-# Validate entire dataset
-python scripts/validar_resultados.py
-
-# Test loader functionality  
-python scripts/test_loader.py
-
-# Run comprehensive examples
-python exemplos_loader.py
-
-# Create unified dataset (if needed)
-python scripts/unify_datasets.py
-```
-
-### File Locations Reference
-```
-metadata/base/merge_unified.csv     # Main unified dataset (3,906 records)
-metadata/base/merge_audio.csv       # Audio-only dataset (3,554 records)
-metadata/base/merge_bimodal.csv     # Bimodal dataset (2,216 records)
-metadata/base/merge_lyrics.csv      # Lyrics-only dataset (2,568 records)
-
-metadata/splits/audio/tvt_*.csv     # Audio split definitions
-metadata/splits/bimodal/tvt_*.csv   # Bimodal split definitions  
-metadata/splits/lyrics/tvt_*.csv    # Lyrics split definitions
-
-scripts/loader.py                   # Main DatasetLoader implementation
-LOADER_GUIDE.md                     # Detailed loader documentation
-exemplos_loader.py                  # Practical usage examples
-```
